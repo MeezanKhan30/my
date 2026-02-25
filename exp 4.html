@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Theme Switcher</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            transition: 0.4s;
+        }
+
+        .card {
+            width: 300px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px gray;
+            background-color: white;
+            transition: 0.4s;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .dark {
+            background-color: #222;
+            color: white;
+        }
+
+        .dark .card {
+            background-color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+    <h2 id="title">Light Mode</h2>
+    <p id="text">Click the button to change theme.</p>
+
+    <button onclick="changeTheme()">Switch Theme</button>
+    <br><br>
+
+    <button id="hideBtn">Hide Text</button>
+    <button id="showBtn">Show Text</button>
+    <button id="toggleBtn">Toggle Text</button>
+    <button id="animateBtn">Animate Card</button>
+</div>
+
+<script>
+
+
+function changeTheme() {
+    document.body.classList.toggle("dark");
+
+    let title = document.getElementById("title");
+
+    if(title.innerHTML === "Light Mode") {
+        title.innerHTML = "Dark Mode";
+        document.getElementById("text").innerHTML = "Dark theme is activated.";
+    } else {
+        title.innerHTML = "Light Mode";
+        document.getElementById("text").innerHTML = "Light theme is activated.";
+    }
+}
+
+
+$("#hideBtn").click(function(){
+    $("#text").fadeOut();
+});
+
+$("#showBtn").click(function(){
+    $("#text").fadeIn();
+});
+
+$("#toggleBtn").click(function(){
+    $("#text").slideToggle();
+});
+
+$("#animateBtn").click(function(){
+    $("#card").animate( 
+        { width: "360px" }, 300).animate({ width: "300px" }, 300);
+});
+
+</script>
+
+</body>
+</html>
