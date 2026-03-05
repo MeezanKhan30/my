@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyCast</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#0f2027;
+  background:linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+}
+
+.card{
+  width:360px;
+  padding:25px;
+  border-radius:15px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(8px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  text-align:center;
+}
+
+.title{
+  font-size:26px;
+  margin-bottom:15px;
+}
+
+.search-box{
+  display:flex;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.search-box input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  outline:none;
+}
+
+.search-box button{
+  padding:10px 14px;
+  border:none;
+  border-radius:8px;
+  background:#ff7b00;
+  color:white;
+  cursor:pointer;
+}
+
+.search-box button:hover{
+  opacity:0.8;
+}
+
+.result{
+  display:none;
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.3);
+}
+
+.emoji{
+  font-size:48px;
+}
+
+.city{
+  font-size:22px;
+  margin:10px 0;
+}
+
+.info{
+  font-size:16px;
+  margin:5px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="title">SkyCast Weather</div>
+
+<div class="search-box">
+<input type="text" id="locationInput" placeholder="Type a city...">
+<button onclick="fetchWeather()">Check</button>
+</div>
+
+<div class="result" id="weatherCard">
+
+<div class="emoji" id="icon">☀️</div>
+<div class="city" id="place"></div>
+
+<div class="info" id="temp"></div>
+<div class="info" id="humid"></div>
+<div class="info" id="wind"></div>
+<div class="info" id="desc"></div>
+
+</div>
+
+</div>
+
+<script>
+
+function fetchWeather(){
+
+const city = document.getElementById("locationInput").value;
+
+fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}`)
+.then(r=>r.json())
+.then(data=>{
+
+if(!data.results){
+alert("City not found");
+return;
+}
+
+const lat = data.results[0].latitude;
+const lon = data.results[0].longitude;
+const cityName = data.results[0].name;
+
+fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m`)
+.then(r=>r.json())
+.then(w=>{
+
+const weather = w.current_weather;
+
+const hour = new Date().getUTCHours();
+const humidity = w.hourly.relativehumidity_2m[hour] || "N/A";
+
+document.getElementById("weatherCard").style.display="block";
+
+document.getElementById("place").innerText = cityName;
+document.getElementById("temp").innerText = `Temperature : ${weather.temperature} °C`;
+document.getElementById("humid").innerText = `Humidity : ${humidity} %`;
+document.getElementById("wind").innerText = `Wind Speed : ${weather.windspeed} km/h`;
+
+const codes = {
+0:["Clear Sky","☀️"],
+1:["Mostly Clear","🌤"],
+2:["Partly Cloudy","⛅"],
+3:["Cloudy","☁️"],
+95:["Thunderstorm","⛈"],
+96:["Thunderstorm + Hail","⛈"],
+99:["Severe Thunderstorm","⛈"]
+};
+
+let condition = codes[weather.weathercode] ? codes[weather.weathercode][0] : "Unknown";
+let emoji = codes[weather.weathercode] ? codes[weather.weathercode][1] : "🌥";
+
+document.getElementById("icon").innerText = emoji;
+document.getElementById("desc").innerText = condition;
+
+});
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
